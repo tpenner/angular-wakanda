@@ -36,7 +36,7 @@ And finally use the `$wakanda` injected service:
 ```javascript
 $wakanda.init().then(function (ds) {
 
-	$scope.contacts = ds.Contact.find();
+	$scope.contacts = ds.Contact.$find();
 
 });
 ```
