@@ -6,6 +6,7 @@
   "homepage": "http://ng-wakanda-pack.us.wak-apps.com/",
   "main": "./angular-wakanda.min.js",
   "license": "BSD",
+  "ignore": [],
   "dependencies": {
     "angular": "~1.2"
   }
