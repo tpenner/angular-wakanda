@@ -12,9 +12,9 @@ Please file [issues](https://github.com/AMorgaut/NG-Wakanda-Pack/issues) and [pu
 
 ## EXPERIMENTAL
 
-Angular-Wakanda is not yet considered as ready for prodution
+THIS IS AN ALPHA RELEASE, AND ACTIVE DEVELOPMENT IS ONGOING. THE ANGULAR-WAKANDA CONNECTOR IS UNSTABLE AND NOT FINAL AND SHOULD NOT BE USED IN PRODUCTION (WHATEVER THAT MEANS FOR YOU).
 
-Fell free to test it for some upcoming project but be aware that it is still incomplete and its API potentially subject to change.
+*Fell free to test it for some upcoming project but be aware that it is still incomplete and its API is potentially subject to change.*
 
 ## Install
 
