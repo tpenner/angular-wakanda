@@ -2,7 +2,7 @@
 
 [![MIT Licensed](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](#license)
 
-This repo is for distribution on `bower`. The source for this module is currently
+This repo is for distribution on [Bower](http://bower.io/). The source for this module is currently
 in the [NG-Wakanda-Pack](https://github.com/AMorgaut/NG-Wakanda-Pack/)  repository.
 Please file [issues](https://github.com/AMorgaut/NG-Wakanda-Pack/issues) and [pull requests](https://github.com/AMorgaut/NG-Wakanda-Pack/pulls) against that repo.
 
