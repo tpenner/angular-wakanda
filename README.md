@@ -2,16 +2,17 @@
 
 [![MIT Licensed](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](#license)
 
+
+*Wakanda® and 4D® are registered trademarks of 4D SAS in France and/or other countries. All other names mentioned may be trademarks or registered trademarks of their respective owners.*
+
 This repo is for distribution on [Bower](http://bower.io/). The source for this module is currently
 in the [NG-Wakanda-Pack](https://github.com/AMorgaut/NG-Wakanda-Pack/)  repository.
 Please file [issues](https://github.com/AMorgaut/NG-Wakanda-Pack/issues) and [pull requests](https://github.com/AMorgaut/NG-Wakanda-Pack/pulls) against that repo.
 
-Wakanda® and 4D® are registered trademarks of 4D SAS in France and/or other countries. All other names mentioned may be trademarks or registered trademarks of their respective owners.
 
 ## EXPERIMENTAL
 
-
-Angular-Wakanda is not ready for prodution
+Angular-Wakanda is not yet considered as ready for prodution
 
 Fell free to test it for some upcoming project but be aware that it is still incomplete and its API potentially subject to change.
 
