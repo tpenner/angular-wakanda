@@ -119,8 +119,9 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', function($q, $rootScop
 //        console.group('prepare.wafDataClasses()', dataStore);
         for (dataClassName in dataStore) {
           if (dataStore.hasOwnProperty(dataClassName) && dataClassName !== "_private" && /^\$.*/.test(dataClassName) === false) {            
-//            console.group('DataClass[%s]', dataStore[dataClassName]._private.className, dataStore[dataClassName]);
+//            console.group('DataClass[%s]', dataStore[dataClassName].getName(), dataStore[dataClassName]);
             prepare.wafDataClassAddMetas(dataStore[dataClassName]);
+            prepare.wafDataClassAddDataClassMethods(dataStore[dataClassName]);
             prepare.wafDataClassCreateNgWakEntityClasses(dataStore[dataClassName]);
             prepare.wafDataClassCreateRefCache(dataStore[dataClassName]);
 //            console.groupEnd();
@@ -129,30 +130,26 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', function($q, $rootScop
 //        console.groupEnd();
       },
       wafDataClassAddMetas : function(dataClass){
-        var methodName,
+        var methodInfo,
             dataClassMethods = [],
             collectionMethods = [],
             entityMethods = [],
             attributes,
             attributeName;
-
-        for(methodName in dataClass._private.dataClassMethodRefs){
-          if(dataClass._private.dataClassMethodRefs.hasOwnProperty(methodName)){
-            dataClassMethods.push(methodName);
-          }
-        }
     
-        for(methodName in dataClass._private.entityCollectionMethodRefs){
-          if(dataClass._private.entityCollectionMethodRefs.hasOwnProperty(methodName)){
-            collectionMethods.push(methodName);
+        angular.forEach(dataClass.getMethodList(),function(methodInfo){
+          switch(methodInfo.applyTo){
+            case "entity" :
+              entityMethods.push(methodInfo.name);
+              break;
+            case "entityCollection" :
+              collectionMethods.push(methodInfo.name);
+              break;
+            case "dataClass" :
+              dataClassMethods.push(methodInfo.name);
+              break;
           }
-        }
-    
-        for(methodName in dataClass._private.entityMethodRefs){
-          if(dataClass._private.entityMethodRefs.hasOwnProperty(methodName)){
-            entityMethods.push(methodName);
-          }
-        }
+        });
         
         attributes = dataClass._private.attributesByName;
         
@@ -180,9 +177,9 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', function($q, $rootScop
           return entityMethods;
         };
         
-        dataClass.$name = dataClass._private.className;
+        dataClass.$name = dataClass.getName();
         
-        dataClass.$collectionName = dataClass._private.collectionName;
+        dataClass.$collectionName = dataClass.getCollectionName();
         
         for(attributeName in attributes){
           if(attributes[attributeName].identifying === true){
@@ -191,11 +188,14 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', function($q, $rootScop
         }
         
       },
+      wafDataClassAddDataClassMethods : function(dataClass) {
+        prepareHelpers.createUserDefinedDataClassMethods(dataClass);
+      },
       wafDataClassCreateNgWakEntityClasses : function(dataClass){
         var proto;
         proto = prepareHelpers.createUserDefinedEntityMethods(dataClass);
-        NgWakEntityClasses[dataClass._private.className] = NgWakEntityAbstract.extend(proto);
-        ds[dataClass._private.className].$Entity = NgWakEntityClasses[dataClass._private.className].prototype;
+        NgWakEntityClasses[dataClass.getName()] = NgWakEntityAbstract.extend(proto);
+        ds[dataClass.getName()].$Entity = NgWakEntityClasses[dataClass.getName()].prototype;
       },
       wafDataClassCreateRefCache : function(dataClass){
         dataClass.$refCache = new NgWakEntityCache();
@@ -233,6 +233,32 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', function($q, $rootScop
           }
         }
         return proto;
+      },
+      createUserDefinedDataClassMethods: function(dataClass) {
+        angular.forEach(dataClass.$dataClassMethods(),function(methodName){
+          dataClass[methodName] = function(){
+            var defer = $q.defer();
+            dataClass.callMethod({
+              method: methodName,
+              onSuccess: function(event){
+                defer.resolve(event);
+              },
+              onError: function(error){
+                console.error('userDataClassMethods.onError','error', error);
+                defer.reject(error);
+              },
+              arguments : arguments.length > 0 ? Array.prototype.slice.call(arguments,0) : []
+            });
+            return defer.promise;
+          };
+          dataClass[methodName+'Sync'] = function(){
+            return dataClass.callMethod({
+              method: methodName,
+              sync: true,
+              arguments : arguments.length > 0 ? Array.prototype.slice.call(arguments,0) : []
+            });
+          };
+        });
       },
       wakandaUserDefinedMethodToPromisableMethods : function(proto, methodName, method){
 
@@ -471,7 +497,7 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', function($q, $rootScop
      * @returns {NgWakEntity}
      */
     var $$create = function(pojo){
-      var dataClassName = this._private.className,
+      var dataClassName = this.getName(),
           ngWakEntity;
       pojo = typeof pojo === "undefined" ? {} : pojo;
       ngWakEntity = new NgWakEntityClasses[dataClassName]();
