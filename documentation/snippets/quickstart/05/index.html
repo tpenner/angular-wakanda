@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" name="viewport">
+    <title>Powered by Wakanda</title>
+
+    <!-- vendor css -->
+    <link href="/bower_components/bootstrap-css/css/bootstrap.css " rel="stylesheet">
+
+    <!-- your app css -->
+    <link href="./styles/style.css" rel="stylesheet">
+
+  </head>
+  <body ng-app="starter">
+
+    <div ng-controller="TodoController">
+      <p>Number of tasks :
+        {{tasks.length}}</p>
+      <ul>
+        <li ng-repeat="task in tasks">
+          <span ng-click="checkItem(task)">
+            {{task.label}}
+            <span ng-if="task.done">
+              [done]
+            </span>
+          </span>
+          <span ng-click="deleteItem(task)">
+            &times;
+          </span>
+        </li>
+      </ul>
+
+      <form ng-submit="addItem()">
+        <label>Add a new task</label>
+        <input ng-model="newItem" type="text"><br/>
+        <input type="submit" value="Add"/>
+      </form>
+    </div>
+
+    <!-- vendor js -->
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/angular-wakanda/angular-wakanda.min.js"></script>
+
+    <!-- your app js -->
+    <script src="scripts/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+<h1>10 minutes quickstart</h1>
+
+<h2>Prerequisite</h2>
+<p>
+  Angular-Wakanda relies mainly on node.js and gulp, so you have to install it on
+  your computer.
+  <ul>
+    <li><a href="https://nodejs.org/en/download/" target="_blank">node.js download page</a></li>
+    <li><code>npm install -g gulp</code></li>
+  </ul>
+  In this quickstart, we will focus on creating an Angular application with Wakanda Studio,
+  but there are other way to do it, you can refer to
+  <a href="#/doc/developer-guide/bootstrap-app">Bootstrap an Angular-Wakanda app</a> guide
+  to learn more.
+</p>
+
+<h2>Creating a solution</h2>
+<p>
+  In this quickstart, we will create a super-simple todo list with Angular-Wakanda.<br />
+  First of all, create a new solution with Wakanda Studio and leave checked the box <em>Add a blank project
+  to the new solution</em>.
+  Then create an <code>Item</code> dataClass on the data model, located on <code>database/model</code>.
+  When it is done, you can launch the solution by clicking on <em>Run Page</em>.
+</p>
+
+<div class="text-center">
+  <img src="/images/documentation/quickstart/dataclass.png" />
+</div>
+
+<p>
+  Our Angular application is located on <code>web/app</code> folder, on Solution Explorer on the
+  left pane. Angular-Wakanda and AngularJS are already installed.
+</p>
+
+<div class="text-center">
+  <img src="/images/documentation/quickstart/explorer.png" />
+</div>
+
+<h2>Retrieving data</h2>
+<p>
+  Let's start by adding a list of existing items on our todo list. Open
+  <code>web/app/index.html</code>, remove code displaying Wakanda logo and add
+  the following code on the <code>body</code> block.
+  <br />
+  Then, on the <code>web/app/scripts/app.js</code>, remove <code>myController</code>
+  and add a <code>TodoController</code> that retrieves all items on the dataclass
+  with <code>$all</code> method.
+</p>
+
+<snippets path="documentation/snippets/quickstart/01/" files="['index.html', 'app.js']"></snippets>
+
+<p>
+  Several things here:
+  <ul>
+    <li>
+      Angular-Wakanda needs to be initialized before using its API. That's why we need to
+      embed our code in a callback called when <code>$wakanda.init()</code> promise is resolved.
+    </li>
+    <li>
+      All Angular-Wakanda methods that have an asynchronous treatment returns a <code>$promise</code> object containing
+      a promise. Pass a callback function to <code>then()</code> method to execute code
+      when the promise is resolved.
+    </li>
+  </ul>
+  Launch the project by clicking on <em>Run page</em>, it will display <em>Number of
+  tasks : 0</em>.
+</p>
+
+<h2>Creating data</h2>
+<p>
+  Now, we will add an input to add some new tasks on our todo list.
+  On <code>web/app/index.html</code>, add a input and a submit button. We will
+  attach an <code>addItem()</code> method to the submit action of the form.<br />
+  On <code>web/app/scripts/app.js</code>, simply add the <code>addItem()</code> method
+  to the scope.
+</p>
+
+<snippets path="documentation/snippets/quickstart/02/" files="['index.html', 'app.js']"></snippets>
+
+<p>
+  Good ! Our todo list is far better now as we can add new tasks on it.<br />
+  To create a new entity, we call <code>$create()</code> method on the right dataClass.
+  Once its parameters are set, simply call <code>$save()</code> on entity and it will be
+  saved on server.
+</p>
+
+<h2>Updating data</h2>
+
+<p>
+  Updating data is really straightforward, edit some properties on an entity, then
+  call <code>$save()</code> on it. And that's it.<br />
+  We are going to illustrate this by marking a task as done (or todo if already done)
+  by clicking on it.
+</p>
+
+<p>
+  Add a <code>ng-click</code> action inside the <code>li</code> element. On our
+  controller, action triggered by this click will inverse the boolean saying if an
+  item is done or not.
+</p>
+
+<snippets path="documentation/snippets/quickstart/03/" files="['index.html', 'app.js']"></snippets>
+
+<p>
+  Like for entity creation, we use the <code>$save()</code> method on the entity
+  to update it. No need to handle the promise returned here, as we do not have
+  treatment to do after.
+</p>
+
+<h2>Removing data</h2>
+
+<p>
+  Removing an entity is as simple as saving one. Call <code>$remove()</code> method
+  on it and it is done.<br />
+  Let's add a little cross to delete an item of our todo list.
+</p>
+
+<snippets path="documentation/snippets/quickstart/04/" files="['index.html', 'app.js']"></snippets>
+
+<h2>Conclusion</h2>
+
+<p>You can find the full <code>index.html</code> and <code>app.js</code> files just below.</p>
+
+<snippets path="documentation/snippets/quickstart/05/" files="['index.html', 'app.js']"></snippets>
+
+<p>
+  And we are done ! We saw in this quickstart how to initialize the Angular-Wakanda
+  connector and how to use it to manipulate data in a simple way. There are a lot other methods
+  to utilize all the power of Wakanda with your Angular application. Check the other docs !
+</p>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

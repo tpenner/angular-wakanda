@@ -1,0 +1,34 @@
+<h1>$wakandaConfig provider</h1>
+
+<p>
+  <code>$wakandaConfig</code> is a useful provider to access the hostname
+  of the Wakanda Server the application is working with.
+</p>
+
+<h2>On application configuration</h2>
+
+<h3><code>setHostname(hostname)</code></h3>
+
+<p>
+  Set the hostname to the provided value. All REST calls from Angular-Wakanda will now
+  be sent to this server. Be careful about CORS (<em>Cross-Origin Resource Sharing</em>) issues.
+</p>
+
+<pre><code class="language-javascript" prism>angular.module('application', ['wakanda'])
+  .config(function ($wakandaConfigProvider) {
+    $wakandaConfigProvider.setHostname('http://webserver.com:1136');
+  });</code></pre>
+
+<h2>Everywhere on the app</h2>
+
+<h3><code>getHostname()</code></h3>
+
+<p>
+  Return the hostname given on application config, or <code>undefined</code> if not set.
+</p>
+
+<pre><code class="language-javascript" prism>app.controller('FooController', function ($scope, $wakandaConfig) {
+  $wakandaConfig.getHostname(); //http://webserver.com:1136
+});</code></pre>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

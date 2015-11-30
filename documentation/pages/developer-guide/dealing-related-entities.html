@@ -1,0 +1,66 @@
+<h1>Dealing with related entities</h1>
+
+<h2>Get related entity</h2>
+<p>
+  If an entity has related entities, there are two ways to retrieve them.
+  <ul>
+    <li>By calling <code>$fetch()</code> method on the related property (<em>lazy loading</em>)</li>
+    <li>By expanding then on the initial request if possible with <code>select</code> option (<em>eager loading</em>)</li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>//Fetching a related attribute
+ds.Person.$find(8).$promise.then(function (event) {
+  var person = event.result;
+
+  person.company.name; //undefined
+
+  person.company.$fetch().$promise.then(function () {
+    person.company.name; //Wakanda SAS
+  });
+});
+
+//Expanding company attribute when retrieving persons with select option
+ds.Person.$all({
+  select: 'company'
+}).$promise.then(function (event) {
+
+  var person = event.result[0];
+  person.company.name; //Wakanda SAS
+});</code></pre>
+
+<h2>Set related entity</h2>
+<p>
+  Simply set the property of the related entity with the entity you want to link,
+  then call <code>$save()</code> on the edited entity.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Item.$find(8).$promise.then(function (e) {
+  var item = e.result;
+
+  ds.Person.$find(3).$promise.then(function (ee) {
+    var person = ee.result;
+
+    item.person = person;
+    item.$save();
+  });
+});</code></pre>
+
+<h2>Filter with a related entity</h2>
+
+<p>
+  You can access related entities attributes while filtering on a query.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Person.$find(3).$promise.then(function (e) {
+  var person = e.result;
+
+  ds.Item.$query({
+    filter: 'person.firstname = :1',
+    params: [person.firstname]
+  }).$promise.then(function (ee) {
+    var items = ee.result;
+  });
+});</code></pre>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

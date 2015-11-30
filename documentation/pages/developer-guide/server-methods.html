@@ -1,0 +1,62 @@
+<h1>Server methods and $tranform</h1>
+
+<p>
+  User defined server methods (attached on a dataclass, an entity or a collection)
+  can return anything : an integer, an object, an array or even an entity. But
+  entities and collection returned by the server have a slightly different API than
+  Angular-Wakanda ones.
+</p>
+
+<p>
+  That's why there are utility methods accessible on <code>$wakanda.$transform</code>
+  object to transform those entities (or collections) to Angular-Wakanda
+  ones, with the methods to manipulate them like <code>$save()</code>, <code>$nextPage()</code>, etc.
+</p>
+
+<h2>Transforming a single entity</h2>
+<p>
+  Let's consider the following method on a <code>Employee</code> dataClass,
+  that returned an employee.
+</p>
+
+<pre><code class="language-javascript" prism>model.Employee.methods.oneEmployee = function () {
+    return ds.Employee.find('ID > 0');
+};
+model.Employee.methods.oneEmployee.scope = 'public';</code></pre>
+
+<p>
+  We are going to pass it on <code>$transform.$objectToEntity()</code> to transform
+  this entity into an Angular-Wakanda one.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Employee.oneEmployee().$promise.then(function (e) {
+  var entity = $wakanda.$transform.$objectToEntity(e.result);
+
+  //Now we can call Angular-Wakanda methods
+  entity.employer.$fetch();
+});</code></pre>
+
+<h2>Transforming a collection</h2>
+
+<p>
+  Consider the following method that returns a collection of entities.
+</p>
+
+<pre><code class="language-javascript" prism>model.Employee.methods.lotsOfEmployees = function () {
+    return ds.Employee.query('ID > 0');
+};
+model.Employee.methods.lotsOfEmployees.scope = 'public';</code></pre>
+
+<p>
+  Like for a single model, we pass it to <code>$transform.$objectToCollection()</code>
+  and it will return a collection, with all the Angular-Wakanda collections methods.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Employee.lotsOfEmployees().$promise.then(function (e) {
+  var collection = $wakanda.$transform.$objectToCollection(e.result);
+
+  //We can call Angular-Wakanda methods
+  collection.$nextPage();
+})</code></pre>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

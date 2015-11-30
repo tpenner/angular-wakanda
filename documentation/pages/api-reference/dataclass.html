@@ -1,0 +1,234 @@
+<h1>DataClass API Reference</h1>
+
+<h2>Framework methods</h2>
+
+<h3>A note about returned values</h3>
+<p>
+  Many of the dataClass methods return an empty object or array, with a
+  <code>$promise</code> object referencing the operation promise. When the
+  promise resolves, the object is filled. So, you can make a direct binding in the scope,
+  and the object will be properly populated when the asynchronous treatment ends.<br />
+  We will see this in the examples.
+</p>
+
+<h3>Retrieve entity</h3>
+<h3><code>$find(key [, options])</code></h3>
+<p>
+  <code>$find</code> method allows you to retrieve a single entity whose ID is
+  the one given with <code>key</code> parameter.<br />
+  <code>options</code> parameter is an optional object that can have two properties :
+  <ul>
+    <li>
+      <code>select</code>: comma-separated string describing the related attributes to expand
+    </li>
+    <li>
+      <code>forceReload</code>: if set to <code>true</code>, the latest version from
+      the server is always reloaded (it might have been changed server-side)
+    </li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>//Direct binding
+$scope.person = ds.Person.find(8);
+
+//Binding on promise
+ds.Person.$find(8).$promise.then(function (event) {
+  $scope.person = event.result;
+})
+.catch(function (error) {
+  console.error(error);
+});
+
+ds.Person.$find(8, {select: 'company'}).$promise.then(function (event) {
+  $scope.person = event.result;
+  $scope.companyName = $scope.person.company.name; //company is already expanded, so we can access its attributes
+});</code></pre>
+
+<h3><code>$all([options])</code></h3>
+
+<p>
+  Return a collection of all the entities presents in the dataClass. Page size is 40
+  by default, it can be set in <code>options</code> parameter. You can find more information
+  on available methods to manipulate collections on the
+  <a href="#/doc/api-reference/collection">Entity collection API Reference</a>.<br />
+  <code>options</code> can have the following properties :
+  <ul>
+    <li>
+      <code>pageSize</code>: number of entities in each page of the returned collection
+    </li>
+    <li>
+      <code>start</code>: number of element to skip
+    </li>
+    <li>
+      <code>orderBy</code>: string describing attribute and direction to sort entities
+    </li>
+    <li>
+      <code>select</code>: comma-separated string describing the related attributes to expand
+    </li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>//Direct binding
+$scope.persons = ds.Person.$all({
+  pageSize: 25,
+  orderBy: 'lastname, firstname'
+});
+
+//Binding on promise
+ds.Person.$all().then(function (event) {
+  $scope.persons = event.result;
+});</code></pre>
+
+<h3><code>$query(options)</code></h3>
+
+<p>
+  Return a collection of all the entities present in the dataClass that match the
+  options given in parameters. Page size is 40 by default. You can find more information
+  on available methods to manipulate collections on the
+  <a href="#/doc/api-reference/collection">Entity collection API Reference</a>.<br />
+  <code>options</code> can have the following properties :
+  <ul>
+    <li>
+      <code>filter</code>: query string that give conditions for entity retrieval. It can
+      contain placeholders which value is set on <code>params</code> options
+    </li>
+    <li>
+      <code>params</code>: array of data to substitute the placeholders presents in
+      <code>filter</code> parameter
+    </li>
+    <li>
+      <code>pageSize</code>: number of entities in each page of the returned collection
+    </li>
+    <li>
+      <code>start</code>: number of element to skip
+    </li>
+    <li>
+      <code>orderBy</code>: string describing attribute and direction to sort entities
+    </li>
+    <li>
+      <code>select</code>: comma-separated string describing the related attributes to expand
+    </li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>//Direct binding
+$scope.children = ds.Person.$query({
+  filter: 'age < :1',
+  params: [18],
+  orderBy: 'lastname, firstname'
+});
+
+//Binding on promise
+ds.Person.$query({
+  filter: 'age < :1 && department = :2',
+  params: [30, 'marketing']
+}).$promise.then(function (event) {
+  $scope.marketingTeam = event.result;
+});</code></pre>
+
+<h3>Create entity</h3>
+<h3><code>$create([attributes])</code></h3>
+
+<p>
+  Create a new entity of a dataClass. This entity <strong>will not be saved on server</strong>
+  until the <code>$save()</code> method is called on it, we will see that method in
+  the <a href="#/doc/api-reference/entity">Entity API Reference</a>.
+  <br />
+  You can pass an object representing attributes of the entity to create.
+</p>
+
+<pre><code class="language-javascript" prism>//Create an entity then set its attributes
+var newPerson = ds.Person.$create();
+newPerson.lastname = 'Smith';
+newPerson.firstname = 'John';
+//at this point, the entity is not saved on server, see $save() documentation on Entity API Reference
+newPerson.$save(); //Now it's saved
+
+//Create an entity and pass its attributes with it
+var newPerson = ds.Person.$create({
+  lastname: 'Smith',
+  firstname: 'John'
+});</code></pre>
+
+<h2>User defined methods</h2>
+
+<p>
+  Wakanda allows you to create your own methods attached to dataClass. Those methods
+  can be applied on the dataClass, on an entity or on a collection of this dataClass.
+</p>
+<p>
+  All dataClass user defined methods are available with the same name on the
+  dataClass instance. They all return a <code>$promise</code> object containing
+  a promise. When the promise is resolved, the returned value (if any) of the method
+  is put on the <code>result</code> property of then event passed to the callback given to
+  <code>then()</code> method.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Person.myDataClassMethod().$promise.then(function (event) {
+  var returnedValue = event.result;
+});</code></pre>
+
+<h2>Metadata</h2>
+
+<p>There are some properties and methods to get metadata regarding each dataClass.</p>
+
+<h3><code>$name</code></h3>
+<p>Name of the dataClass.</p>
+<pre><code class="language-javascript" prism>ds.Person.$name; //Person</code></pre>
+
+<h3><code>$collectionName</code></h3>
+<p>Name of a collection composed on this kind of dataClass.</p>
+<pre><code class="language-javascript" prism>ds.Person.$collectionName; //PersonCollection</code></pre>
+
+<h3><code>$attr([name])</code></h3>
+<p>
+  Return an object containing all dataClass attributes metada, or only metadata of
+  the corresponding attribute if <code>name</code> parameter is given.
+</p>
+<pre><code class="language-javascript" prism>var metadata = ds.Person.$attr();
+
+/*
+metadata content : {
+  ID: {name: "ID", kind: "storage", scope: "public", indexed: true, type: "long", …},
+  firstname: {name: "firstname", kind: "storage", scope: "public", type: "string", owner: DataClass, …},
+  lastname: {name: "lastname", kind: "storage", scope: "public", type: "string", owner: DataClass, …}
+}
+*/
+
+var firstnameMeta = ds.Person.$attr('firstname');
+
+/*
+firstnameMeta content : {
+  name: "firstname",
+  kind: "storage",
+  scope: "public",
+  type: "string",
+  owner: DataClass,
+  related: false,
+  simple: true
+}
+*/</code></pre>
+
+<h3><code>$entityMethods()</code></h3>
+<p>
+  Return an array containing all entity methods on the dataClass whose scope is
+  <em>public</em> (not <em>public on server</em>).
+</p>
+<pre><code class="language-javascript" prism>ds.Person.$entityMethods(); //['myEntityMethod', 'mySecondEntityMethod']</code></pre>
+
+<h3><code>$collectionMethods()</code></h3>
+<p>
+  Return an array containing all collection methods on the dataClass whose scope is
+  <em>public</em> (not <em>public on server</em>).
+</p>
+<pre><code class="language-javascript" prism>ds.Person.$collectionMethods(); //['myCollectionMethod', 'mySecondCollectionMethod']</code></pre>
+
+<h3><code>$dataClassMethods()</code></h3>
+<p>
+  Return an array containing all class methods on the dataClass whose scope is
+  <em>public</em> (not <em>public on server</em>).
+</p>
+<pre><code class="language-javascript" prism>ds.Person.$dataClassMethods(); //['myDataClassMethod', 'mySecondDataClassMethod']</code></pre>
+
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

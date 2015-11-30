@@ -1,0 +1,65 @@
+<h1>Upgrading from 0.4.x</h1>
+
+<p>
+  This guide will cover the steps to upgrade your Angular-Wakanda application
+  from version <code>0.4.x</code> to version <code>1.0</code>.
+</p>
+
+<h2>Breaking changes</h2>
+<ul>
+  <li><code>dataClass.$find()</code> has been renamed to <code>dataClass.$query()</code></li>
+  <li><code>dataClass.$findOne()</code> has been rename to <code>dataClass.$find()</code></li>
+  <li><code>collection.$find()</code> has been renamed to <code>collection.$query()</code></li>
+  <li><code>collection.$query</code> has been renamed to <code>collection.$queryParams</code></li>
+</ul>
+
+<h2>What's new on 1.0</h2>
+<p>
+  <ul>
+    <li>
+      API standardization : all methods that return a promise also return a
+      <code>$promise</code> object that contained this promise in order to have a
+      more coherent API. Some methods has been renamed to have more coherence between
+      Angular-Wakanda API and Wakanda Server API (see <em>Breaking Changes</em>).
+    </li>
+    <li>Delete reference cache management</li>
+    <li>Add <code>$upload()</code> method on <em>image</em> type attribute</li>
+    <li>Add <code>dataClass.$all()</code> method</li>
+    <li>
+      Add <code>$wakanda.$transform</code> helpers to transform a raw entity returned
+      by server to a Angular-Wakanda entity
+    </li>
+    <li>
+      Add <code>$wakandaConfifProvider</code> to set Wakanda server hostname on application
+      configuration
+    </li>
+    <li>Add <code>entity.$serverRefresh()</code> method</li>
+    <li><em>Image</em> type attribute handling</li>
+  </ul>
+</p>
+
+<h2>Upgrading</h2>
+
+<h3>Update Angular-Wakanda version</h3>
+
+<p>
+  If Angular-Wakanda is installed with Bower or scaffolded by the Yeoman generator.
+</p>
+<pre><code class="language-bash" prism>bower update</code></pre>
+
+<p>
+  If you directly downloaded Angular-Wakanda from Github, grab the new version
+  <a href="https://github.com/Wakanda/angular-wakanda/releases" target="_blank">
+  on the release page</a>.
+</p>
+
+<h3>Renaming</h3>
+
+<p>
+  Rename all <code>dataClass.$find()</code> occurrences by <code>dataClass.$query()</code> ones.<br />
+  Rename all <code>dataClass.$findOne()</code> occurences by <code>dataClass.$find()</code> ones.<br />
+  Rename all <code>collection.$find()</code> occurences by <code>collection.$query()</code> ones.<br />
+  Rename all <code>collection.$query</code> occurences by <code>collection.$queryParams</code> ones.<br />
+</p>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

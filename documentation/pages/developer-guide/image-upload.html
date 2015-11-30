@@ -1,0 +1,34 @@
+<h1>Image upload</h1>
+
+<p>
+  Image upload with Angular-Wakanda is realy straightforward. When you have an
+  attribute of type <em>image</em> on a dataClass, this attribute will have
+  a <code>$upload()</code> method available.
+</p>
+
+<h2>Uploading an image</h2>
+<p>
+  We will use a simple file input with an identifier, and Angular-Wakanda will
+  do the rest.
+</p>
+
+<snippets path="documentation/snippets/developer-guide/image-upload" files="['index.html', 'app.js']"></snippets>
+
+<p>
+  The image is then saved on Wakanda Server, and you can access it with an URI.
+</p>
+
+<h2>Retrieving image</h2>
+
+<p>
+  Image is accessible with a URI, you can get it on the <em>image</em> attribute
+  of the entity.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Person.$find(8).$promise.then(function (e) {
+  var person = e.result;
+
+  person.photo.uri; //http://...
+});</code></pre>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

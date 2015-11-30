@@ -1,0 +1,26 @@
+.feature-block {
+  text-align: center;
+  margin-bottom: 40px;
+  height: 320px;
+
+  h3 {
+    color: $brand-primary;
+    margin: 10px;
+    text-shadow: 1px 1px #DDDDDD;
+  }
+
+  img {
+    display: inline-block;
+  }
+
+  p {
+    font-size: 1.1em;
+    text-align: center;
+  }
+}
+
+.jumbotron {
+  p {
+    text-align: center;
+  }
+}

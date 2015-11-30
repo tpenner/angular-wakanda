@@ -1,0 +1,229 @@
+<h1>Entity collection API Reference</h1>
+
+<h2>Accessing entity</h2>
+
+<p>
+  Entity collections are arrays, with some utility methods. You can access their items
+  directly with <code>[]</code> operator. Items in Entity collection are entities, so
+  every methods that are described into <a href="#/doc/api-reference/entity">Entity API Reference</a>
+  are available on them.
+</p>
+
+<pre><code class="language-javascript" prism>var person = personCollection[4];
+$scope.firstSeller = products[0].seller;</code></pre>
+
+<h2>Framework properties and methods</h2>
+
+<h3>A note about returned values</h3>
+<p>
+  Many of the collection methods return an empty object or array, with a
+  <code>$promise</code> object referencing the operation promise. When the
+  promise resolves, the object is filled. So, you can make a direct binding in the scope,
+  and the object will be properly populated when the asynchronous treatment ends.<br />
+  We will see this in the examples.
+</p>
+
+<h3>Properties</h3>
+<h3><code>$totalCount</code></h3>
+
+<p>
+  Integer indicating the total number of entities in the <strong>whole</strong> collection,
+  <strong>not on the current page</strong>.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Person.$all().$promise.then(function (event) {
+  var persons = event.result;
+
+  persons.$totalCount; //1136
+});</code></pre>
+
+<h3><code>$fetching</code></h3>
+
+<p>
+  Boolean indicating if collection is fetching or not. Automatically updated by the connector.
+  It is set to <code>false</code> at the end of the HTTP request.
+</p>
+
+<pre><code class="language-javascript" prism>var collection = ds.Person.$all();
+collection.$fetching; //true
+
+//after a moment
+collection.$fetching; //false</code></pre>
+
+<h3><code>$queryParams</code></h3>
+
+<p>
+  Contain the state of the collection initial fetch request.
+</p>
+<pre><code class="language-javascript" prism>products.$queryParams.pageSize;
+products.$queryParams.start;
+products.$queryParams.filter;</code></pre>
+
+<h3>Retrieving data</h3>
+<h3><code>$fetch([options], [mode])</code></h3>
+
+<p>
+  Retrieves entities from the server on the same entity collection. <strong>It modifies the
+  current collection</strong> when ends, either replacing entities or appending the, according
+  to the value of <code>mode</code> parameter. It accepts <code>append</code> and
+  <code>replace</code>. If no one is supplied, <code>replace</code> is the default mode.
+</p>
+<p>
+  Called without parameters, <code>fetch()</code>
+  will refresh the data and won't change page.<br />
+  <code>options</code> parameter accepts the following attributes:
+  <ul>
+    <li>
+      <code>filter</code>: query string that give conditions for entity retrieval. It can
+      contain placeholder which value is set on <code>params</code> options
+    </li>
+    <li>
+      <code>params</code>: array of data to substitute the placeholders presents in
+      <code>filter</code> parameter
+    </li>
+    <li>
+      <code>pageSize</code>: number of entities in each page of the returned collection
+    </li>
+    <li>
+      <code>start</code>: number of element to skip
+    </li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>//Refresh products collection
+products.$fetch().$promise.then(function () {
+  //products is updated
+});
+
+products.$fetch({
+  start: 20,
+  pageSize: 10
+}).$promise.then(function () {
+  //products is updated
+});</code></pre>
+
+<h3><code>$query(options)</code></h3>
+
+<p>
+  Retrives entites from the server in the same entity collection matching the options given,
+  like <code>$fetch()</code> method, but <strong>returns a new collection</strong>.<br />
+  <code>options</code> can have the following properties :
+  <ul>
+    <li>
+      <code>filter</code>: query string that give conditions for entity retrieval. It can
+      contain placeholder which value is set on <code>params</code> options
+    </li>
+    <li>
+      <code>params</code>: array of data to substitute the placeholders presents in
+      <code>filter</code> parameter
+    </li>
+    <li>
+      <code>pageSize</code>: number of entities in each page of the returned collection
+    </li>
+    <li>
+      <code>start</code>: number of element to skip
+    </li>
+    <li>
+      <code>orderBy</code>: string describing attribute and direction to sort entities
+    </li>
+    <li>
+      <code>select</code>: comma-separated string describing the related attributes to expand
+    </li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>employees.$query({
+  filter: 'status = :1',
+  params: ['intern']
+}).$promise.then(function (event) {
+  var interns = event.result;
+})</code></pre>
+
+<h3>Paging</h3>
+
+<h3><code>$nextPage()</code></h3>
+
+<p>
+  Retrieve the next page of a collection and switch on it. <strong>The current collection array
+  is modified</strong>.
+</p>
+
+<pre><code class="language-javascript" prism>//On a controller
+$scope.employees = ds.Employee.$query({
+  filter: 'age > :1',
+  params: [30]
+});
+
+$scope.clickOnNext = function () {
+  $scope.employees.$nextPage();
+};</code></pre>
+
+<h3><code>$prevPage()</code></h3>
+
+<p>
+  Retrieve the previous page of a collection and switch on it. <strong>The current
+  collection is modified.</strong>
+</p>
+
+<pre><code class="language-javascript" prism>//On a controller
+$scope.employees = ds.Employee.$query({
+  filter: 'age > :1',
+  params: [30]
+});
+
+$scope.clickOnPrev = function () {
+  $scope.employees.$prevPage();
+};</code></pre>
+
+<h3><code>$more()</code></h3>
+
+<p>
+  Retrieve the next page of a collection and append it to the current one.
+  <strong>The current collection is modified.</strong>
+</p>
+
+<pre><code class="language-javascript" prism>//On a controller
+$scope.employees = ds.Employee.$query({
+  filter: 'age > :1',
+  params: [30]
+});
+
+$scope.displayMore = function () {
+  $scope.employees.$more();
+};</code></pre>
+
+<h3>Utility</h3>
+<h3><code>$toJSON()</code></h3>
+
+<p>
+  Return a string containing a JSON representation of the current collection.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Person.$all().$promise.then(function (event) {
+  var persons = event.result;
+  var personsJsonString = persons.$toJSON();
+})</code></pre>
+
+<h2>User defined methods</h2>
+
+<p>
+  Wakanda allows you to create your own methods attached to collections. Those methods
+  can be applied on the dataClass, on an entity or on a collection of this dataClass.
+</p>
+<p>
+  All collection user defined methods are available with the same name on the
+  collection instance. They all return a <code>$promise</code> object containing
+  a promise. When the promise is resolved, the returned value (if any) of the method
+  is put on the <code>result</code> property of then event passed to the callback given to
+  <code>then()</code> method.
+</p>
+
+<pre><code class="language-javascript" prism>ds.Person.$all().$promise.then(function (event) {
+  var persons = event.result;
+
+  persons.myCollectionMethod().$promise.then(function (e) {
+    var result = e.result;
+  })
+});</code></pre>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

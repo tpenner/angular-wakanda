@@ -1,0 +1,194 @@
+<h1>Bootstrap an Angular-Wakanda application</h1>
+
+<p>
+  There are three ways to bootstrap an Angular-Wakanda project :
+  <ol>
+    <li>
+      Using Wakanda Studio
+    </li>
+    <li>
+      With the
+      <a href="https://github.com/Wakanda/generator-angular-wakanda">angular-wakanda yeoman generator</a>
+    </li>
+    <li>
+      Manually, with
+      <a href="http://bower.io" target="_blank">bower</a>
+      or by downloading the connector on the
+      <a href="https://github.com/Wakanda/angular-wakanda">Github repository</a>
+    </li>
+  </ol>
+  We will see, step by step, how to get ready to develop with these three ways.
+</p>
+
+<h2>Option 1 - Using Wakanda Studio</h2>
+<p>
+  Create a new solution with Wakanda Studio and leave checked the box <em>Add a blank project
+  to the new solution</em>.
+</p>
+<p>
+  When the solution is ready, your Angular application is ready to use, located
+  on <code>web/app</code> folder. AngularJS and Angular-Wakanda are already installed.
+</p>
+
+<h2>Option 2 - Using angular-wakanda yeoman generator</h2>
+<p>
+  We can bootstrap an Angular application using Wakanda connector with our
+  <a href="https://github.com/Wakanda/generator-angular-wakanda">Yeoman generator</a>.
+  Start by installing yeoamn and the generator with npm, then launch the generator
+  on your application folder.
+</p>
+
+<pre><code class="language-bash" prism>npm install -g yo generator-angular-wakanda
+mkdir myApplication && cd myApplication
+yo angular-wakanda</code></pre>
+
+<p>
+  The yeoman generator will ask some questions to know about libraries to install and some
+  configuration options. Then it will scaffold application and install npm and bower dependencies.
+  Process is quite long, it will take several minutes to execute.<br />
+  When it's done, move to your application directory (the name you choose on first
+  step of the generator) and launch <code>grunt serve</code> (assuming you have grunt install globally),
+  your application is ready.
+</p>
+
+<p>
+  On the application folder, there is a <code>wakandaApp.json</code> file that is used by
+  Grunt to know where to proxy requests that must reach your Wakanda Server.
+  If you change its content, just relaunch your <code>grunt serve</code> task.
+</p>
+
+<h2>Option 3 - Manually with bower</h2>
+<h3>Initialized bower</h3>
+<p>If bower is not installed, install it with npm.</p>
+
+<pre><code class="language-bash" prism>npm install -g bower</code></pre>
+
+<p>
+  If your project is not still initialized for bower, launch the
+  <code>bower init</code>
+  command and answer the questions. When it is done, all information are put on
+  <code>bower.json</code>
+  file.
+</p>
+
+<h3>Install Angular-Wakanda</h3>
+<p>
+  Install angular-wakanda with bower. Do not forget the <code>--save</code>
+  option to add it on your <code>bower.json</code> file. Angular will also be
+  installed via bower, as it is a dependency of our connector.
+</p>
+<pre>
+<code class="language-bash" prism>bower install --save angular-wakanda</code>
+</pre>
+
+<p>
+  Now include both angular and angular-wakanda in our html file and create an
+  <code>app.js</code> file that initializes our angular application.
+</p>
+
+<snippets files="['index.html', 'app.js']" path="documentation/snippets/developer-guide/bootstrap-app/"></snippets>
+
+<p>
+  If your project is inside a Wakanda Solution, launch it and browse to
+  <code>index.html</code>. Initialization status will show
+  <em>done!</em>.
+</p>
+<p>
+  If you directly serve those files with an HTTP server (like
+  <code>http-server</code>, or with grunt or gulp), you will need to either :
+  <ul>
+    <li>Create a proxy to reach your Wakanda server (<strong>recommended</strong>)
+    </li>
+    <li>Configure Wakanda hostname on your angular config (<strong>not recommended</strong>, you might face CORS issues)
+    </li>
+  </ul>
+</p>
+
+<p>In our case, we will see how to configure
+  <a href="http://gulpjs.com" target="_blank">gulp</a>
+  to serve our project and set up a proxy to reach our Wakanda Server.</p>
+
+<h3>Serving project with gulp</h3>
+
+<p>
+  Start by installing <code>gulp</code>, <code>gulp-connect</code> and
+  <code>http-proxy-middleware</code> packages with npm.
+</p>
+
+<pre><code class="language-bash" prism>npm install --save-dev gulp gulp-connect http-proxy-middleware</code></pre>
+
+<p>Then create a file named <code>gulpfile.js</code> at the root of your project and copy
+  the following code in it.
+<p>
+
+<pre><code class="language-javascript" prism>var gulp = require('gulp');
+var connect = require('gulp-connect');
+var proxy = require('http-proxy-middleware');
+
+var wakandaApp = {
+  host: 'localhost',
+  port: 8081
+};
+
+gulp.task('serve', function() {
+  connect.server({
+    root: ['.'],
+    livereload: true,
+    // Change this to '0.0.0.0' to access the server from outside.
+    port: 9090,
+    middleware: function (connect, opt) {
+      return [
+        proxy('/rest', {
+          target: 'http://' + wakandaApp.host + ':' + wakandaApp.port,
+          changeOrigin: true,
+          ws: true
+        })
+      ];
+    }
+  });
+});</code></pre>
+
+<p>
+  Now we can start our project with the following command
+</p>
+
+<pre><code class="language-bash" prism>node ./node_modules/gulp/bin/gulp.js serve</code></pre>
+
+<p>
+As it is not very convenient to type such a command, we can install gulp globally with
+<code>npm install -g gulp</code> and then simply
+launch <code>gulp serve</code>.
+<br />
+Another option is to add a script on our <code>package.json</code>, so that we can get
+rid of installing gulp globally. To do so, add a property <code>gulp-serve</code> on
+<code>scripts</code> part:
+</p>
+
+<pre><code class="language-javascript" prism></code>{
+  "name": "MyApp",
+  "version": "1.0.0",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-connect": "^2.2.0",
+    "http-proxy-middleware": "^0.9.0"
+  },
+  "dependencies": {},
+  "scripts": {
+    "gulp-serve": "node ./node_modules/gulp/bin/gulp.js serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
+</pre>
+
+<p>
+Now we can launch our gulp server with the following command
+</p>
+
+<pre><code class="language-bash" prism>npm run gulp-serve</code></pre>
+
+<p>
+  If the Wakanda Solution is still not running, do it now. The initialization
+  status should show <em>done!</em> if everything is alright. We're ready to go!
+</p>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

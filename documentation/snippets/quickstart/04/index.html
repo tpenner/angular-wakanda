@@ -1,0 +1,13 @@
+<ul>
+  <li ng-repeat="task in tasks">
+    <span ng-click="checkItem(task)">
+      {{task.label}}
+      <span ng-if="task.done">
+        [done]
+      </span>
+    </span>
+    <span ng-click="deleteItem(task)">
+    	&times;
+    </span>
+  </li>
+</ul>

@@ -1,0 +1,118 @@
+<h1>$wakanda service</h1>
+
+<h2>Initialization and dataStore</h2>
+<p>
+  Regardless of the way Angular-Wakanda is installed (bower, npm, inside the studio),
+  <code>angular-wakanda.min.js</code> must be inserted in your main html file,
+  with a <code>script</code> tag.
+</p>
+
+<pre><code class="language-markup" prism>&lt;script src="/bower_components/angular-wakanda/angular-wakanda.min.js"&gt;&lt;/script&gt;</code></pre>
+
+<p>
+  Then, the <code>wakanda</code> module must be added to your Angular module that uses Wakanda.
+</p>
+
+<pre><code class="language-javascript" prism>var app = angular.module('application', ['wakanda']);</code></pre>
+
+<p>
+  You can now inject <code>$wakanda</code> service where you need it.
+</p>
+
+<pre><code class="language-javascript" prism>app.controller('MyController', function ($scope, $wakanda) {
+});</code></pre>
+
+<h3><code>init([dataClass...])</code></h3>
+<p>
+  The <code>init()</code> method loads Wakanda DataStore and every dataClass
+  on the data model, or only the ones given on parameters.<br />
+  It returns a promise, which provide the dataStore when it is resolved.
+</p>
+
+<pre><code class="language-javascript" prism>//Load all the data model, callback called by promise will receive the dataStore object
+$wakanda.init().then(function (ds) {
+  //use dataStore
+});
+
+//Load only Company and Product dataClasses
+$wakanda.init('Company', 'Product').then(function (ds) {
+  //use dataStore;
+});</code></pre>
+
+<p>
+  Once the dataStore is ready, you can access every loaded dataClasses with it.
+</p>
+
+<pre><code class="language-javascript" prism>var Product = ds.Product;</code></pre>
+
+<h3><code>getDataStore()</code></h3>
+<p>
+  Once <code>init()</code> has been called, you can get the dataStore object by
+  calling <code>getDataStore()</code> method. If <code>init()</code> has not been
+  called, or the promise has not been resolved yet, it will throw an error.
+</p>
+
+<pre><code class="language-javascript" prism>var ds = $wakanda.getDataStore();</code></pre>
+
+<h2>Authentication</h2>
+<p>
+  To get required permissions to use dataClass, it is often required
+  to be authenticated. Wakanda backend has a native directory and can handle custom
+  authentications. The connector expose an API to handle authentication.
+</p>
+
+<h3><code>$login(username, password)</code></h3>
+<p>
+  Log the user if given credentials are correct. It returns a promise. If promise
+  is resolved, user is kept logged in by Angular-Wakanda with a cookie until it expires
+  or is logged out.
+</p>
+
+<pre><code class="language-javascript" prism>$wakanda.$login('user', 'strong-passord').$promise.then(function () {
+  //User is logged and have permission to manipulate the right dataclasses
+});</code></pre>
+
+<h3><code>$logout()</code></h3>
+<p>
+  Log out the current logged in user, return a promise.
+</p>
+
+<pre><code class="language-javascript" prism>$wakanda.$logout().$promise.then(function () {
+  //User is logged out
+});</code></pre>
+
+<h3><code>$currentUser()</code></h3>
+<p>
+  Get information about the current logged in user. If user is not logged in, return <code>null</code>.
+</p>
+
+<pre><code class="language-javascript" prism>//With a properly logged in user
+$wakanda.$currentUser().$promise.then(function (event) {
+  var currentUser = event.result;
+  currentUser.userName;
+  currentUser.fullName;
+  currentUser.ID;
+});
+
+//Without a logged in user
+$wakanda.$currentUser().$promise.then(function (event) {
+  var currentUser = event.result;
+  currentUser; //null
+});</code></pre>
+
+<h3><code>$currentUserBelongsTo(groupName)</code></h3>
+
+<p>
+  Check if the current logged in user belongs to the group given in parameter.
+</p>
+
+<pre><code class="language-javascript" prism>//In this example, our logged in user is part of management group, but not admin
+$wakanda.$currentUserBelongsTo('management').$promise.then(function (event) {
+  event.result; //true
+});
+
+$wakanda.$currentUserBelongsTo('admin').$promise.then(function (event) {
+  event.result; //false
+});</code></pre>
+
+<doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>
