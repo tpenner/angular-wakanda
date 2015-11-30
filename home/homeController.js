@@ -23,10 +23,6 @@ angular.module('angular-wakanda-website')
       name: 'Coherent API with promise',
       description: 'Every method that made asynchronous work exposes a promise object, so that you keep perfect control of User Interface.',
       imageUrl: 'http://placehold.it/200x200'
-    }, {
-      name: 'Any idea ?',
-      description: 'A last idea please ? I couldn\'t find a last one :(',
-      imageUrl: 'http://placehold.it/200x200'
     }];
 
     $scope.features = features;
