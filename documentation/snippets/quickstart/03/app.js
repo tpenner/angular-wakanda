@@ -1,11 +1,10 @@
-angular.module('starter', ['wakanda'])
-  .controller('TodoController', function($scope, $wakanda) {
-    $wakanda.init().then(function(ds) {
-      /* ... */
+app.controller('TodoController', function($scope, WakandaManager) {
+  WakandaManager.ready().then(function() {
+    /* ... */
 
-      $scope.checkItem = function (item) {
-        item.done = !item.done;
-        item.$save();
-      };
-    });
+    $scope.checkItem = function(item) {
+      item.done = !item.done;
+      item.$save();
+    };
   });
+});

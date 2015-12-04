@@ -47,12 +47,20 @@ $wakanda.init('Company', 'Product').then(function (ds) {
 
 <h3><code>getDataStore()</code></h3>
 <p>
-  Once <code>init()</code> has been called, you can get the dataStore object by
+  Once <code>init()</code> has resolved, you can get the dataStore object by
   calling <code>getDataStore()</code> method. If <code>init()</code> has not been
   called, or the promise has not been resolved yet, it will throw an error.
 </p>
 
 <pre><code class="language-javascript" prism>var ds = $wakanda.getDataStore();</code></pre>
+
+<h3><code>$ds</code></h3>
+<p>
+  Once <code>init()</code> has resolved, you can access the dataStore object on the
+  <code>$ds</code> property.
+</p>
+
+<pre><code class="language-javascript" prism>var ds = $wakanda.$ds;</code></pre>
 
 <h2>Authentication</h2>
 <p>
@@ -113,6 +121,45 @@ $wakanda.$currentUserBelongsTo('management').$promise.then(function (event) {
 
 $wakanda.$currentUserBelongsTo('admin').$promise.then(function (event) {
   event.result; //false
+});</code></pre>
+
+<h2>Transforming entity</h2>
+
+<p>
+  In order to transform entities returned by server-side user defined methods on
+  Angular-Wakanda ones (with framework methods like <code>$save()</code>, <code>$find()</code>, etc.),
+  you can use the following two functions. For more information about how to use it,
+  please refer to the following guide : <a href="#/doc/developer-guide/server-methods">Server methods and <code>$transform</code></a>.
+</p>
+
+<h3><code>$transform.$objectToEntity</code></h3>
+
+<p>
+  Transform a single entity returned by server-side user defined methods into an
+  Angular-Wakanda one.
+</p>
+
+<pre><code class="language-javascript" prism>//Considering a oneEmployee() method that return a single entity
+ds.Employee.oneEmployee().$promise.then(function (e) {
+  var entity = $wakanda.$transform.$objectToEntity(e.result);
+
+  //Now we can call Angular-Wakanda methods like $fetch()
+  entity.employer.$fetch();
+});</code></pre>
+
+<h3><code>$transform.$objectToCollection</code></h3>
+
+<p>
+  Transform a collection of entity returned by server-side user defined methods
+  into an Angular-Wakanda one.
+</p>
+
+<pre><code class="language-javascript" prism>//Considering a lotsOfEmployee() method that return a collection of entity
+ds.Employee.lotsOfEmployees().$promise.then(function (e) {
+  var collection = $wakanda.$transform.$objectToCollection(e.result);
+
+  //We can call Angular-Wakanda methods
+  collection.$nextPage();
 });</code></pre>
 
 <doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>

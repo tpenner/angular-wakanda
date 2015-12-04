@@ -140,7 +140,7 @@ gulp.task('serve', function() {
       return [
         proxy('/rest', {
           target: 'http://' + wakandaApp.host + ':' + wakandaApp.port,
-          changeOrigin: true,
+          changeOrigin: false,
           ws: true
         })
       ];

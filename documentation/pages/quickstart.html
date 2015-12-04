@@ -36,6 +36,63 @@
   <img src="./images/documentation/quickstart/explorer.png" />
 </div>
 
+<h2>The <code>WakandaManager</code> service</h2>
+<p>
+  On the scaffolded application when creating a new solution, there is a <code>WakandaManager</code>
+  service avalaible on <code>web/app/scripts/app.js</code> file. This service aimed at giving
+  you a simple way to use your <code>$wakanda</code> instance object everywhere
+  in your application.
+</p>
+<p>
+  It will init <code>$wakanda</code> and exposes it through <code>WakandaManager.$wakanda</code>
+  property. It exposes a promise indicating if <code>$wakanda</code> has finished initializing
+  or not.
+</p>
+<p>
+  You can use this service two different ways :
+  <ul>
+    <li>
+      By directly injecting it on a component, putting your code on the callback called
+      when <code>WakandaManager</code> promise is resolved
+    </li>
+    <li>
+      By letting your router resolving the promise and injecting the service when
+      it resolves
+    </li>
+  </ul>
+</p>
+
+<pre><code class="language-javascript" prism>//Injecting WakandaManager directly on a component
+app.controller('myController', function ($scope, WakandaManager) {
+  WakandaManager.ready().then(function () {
+    var $wakanda = WakandaManager.$wakanda;
+    var ds = $wakanda.$ds; //ds stands for dataStore, we will see it in the following examples
+  });
+});
+
+//Injecting with resolve property of a route. Here with ngRoute
+app.config(function ($routeProvider) {
+  $routeProvider
+    .when('/', {
+      templateUrl: 'home.html',
+      controller: 'homeController',
+      resolve: {
+        manager: function (WakandaManager) {
+          return WakandaManager.ready();
+        }
+      }
+    });
+})
+.controller('homeController', function($scope, manager) {
+  var $wakanda = manager.$wakanda;
+});</code></pre>
+
+<p>
+  In this quickstart, we will directly inject <code>WakandaManager</code> service
+  on controller. But for a real application, it is strongly advised to resolve it
+  on router.
+</p>
+
 <h2>Retrieving data</h2>
 <p>
   Let's start by adding a list of existing items on our todo list. Open

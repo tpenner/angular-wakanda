@@ -1,13 +1,12 @@
-angular.module('starter', ['wakanda'])
-  .controller('TodoController', function($scope, $wakanda) {
-    $wakanda.init().then(function(ds) {
-      /* ... */
+app.controller('TodoController', function($scope, WakandaManager) {
+  WakandaManager.ready().then(function() {
+    /* ... */
 
-      $scope.deleteItem = function (item) {
-        var index = $scope.tasks.indexOf(item);
-        item.$remove().$promise.then(function () {
-          $scope.tasks.splice(index, 1);
-        });
-      };
-    });
+    $scope.deleteItem = function(item) {
+      var index = $scope.tasks.indexOf(item);
+      item.$remove().$promise.then(function() {
+        $scope.tasks.splice(index, 1);
+      });
+    };
   });
+});
