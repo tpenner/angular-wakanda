@@ -1,15 +1,15 @@
-<h1>10 minutes quickstart</h1>
+<h1>10 minute quickstart</h1>
 
-<h2>Prerequisite</h2>
+<h2>Prerequisites</h2>
 <p>
-  Angular-Wakanda relies mainly on node.js and gulp, so you have to install it on
+  Angular-Wakanda relies mainly on node.js and gulp, so you have to install them on
   your computer.
   <ul>
     <li><a href="https://nodejs.org/en/download/" target="_blank">node.js download page</a></li>
     <li><code>npm install -g gulp</code></li>
   </ul>
   In this quickstart, we will focus on creating an Angular application with Wakanda Studio,
-  but there are other way to do it, you can refer to
+  but there are other ways to do it, you can refer to
   <a href="#/doc/developer-guide/bootstrap-app">Bootstrap an Angular-Wakanda app</a> guide
   to learn more.
 </p>
@@ -49,7 +49,7 @@
   or not.
 </p>
 <p>
-  You can use this service two different ways :
+  You can use this service in two different ways :
   <ul>
     <li>
       By directly injecting it on a component, putting your code on the callback called
@@ -89,7 +89,7 @@ app.config(function ($routeProvider) {
 
 <p>
   In this quickstart, we will directly inject <code>WakandaManager</code> service
-  on controller. But for a real application, it is strongly advised to resolve it
+  on the controller. But for a real application, it is strongly advised to resolve it
   on router.
 </p>
 
@@ -126,7 +126,7 @@ app.config(function ($routeProvider) {
 <h2>Creating data</h2>
 <p>
   Now, we will add an input to add some new tasks on our todo list.
-  On <code>web/app/index.html</code>, add a input and a submit button. We will
+  On <code>web/app/index.html</code>, add an input and a submit button. We will
   attach an <code>addItem()</code> method to the submit action of the form.<br />
   On <code>web/app/scripts/app.js</code>, simply add the <code>addItem()</code> method
   to the scope.
@@ -184,6 +184,11 @@ app.config(function ($routeProvider) {
   And we are done ! We saw in this quickstart how to initialize the Angular-Wakanda
   connector and how to use it to manipulate data in a simple way. There are a lot other methods
   to utilize all the power of Wakanda with your Angular application. Check the other docs !
+</p>
+
+<p>
+  You can find the whole Wakanda solution on GitHub, on the <a href="https://github.com/Wakanda/wakanda-10-min-quickstart">Wakanda/10-min-quickstart</a>
+  repository.
 </p>
 
 <doc-pagination page="{{currentPage}}" subpage="{{currentSubPage}}"></doc-pagination>
