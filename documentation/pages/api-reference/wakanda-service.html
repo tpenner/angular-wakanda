@@ -22,7 +22,7 @@
 <pre><code class="language-javascript" prism>app.controller('MyController', function ($scope, $wakanda) {
 });</code></pre>
 
-<h3><code>init([dataClass...])</code></h3>
+<h3><code>init([catalog])</code></h3>
 <p>
   The <code>init()</code> method loads Wakanda DataStore and every dataClass
   on the data model, or only the ones given on parameters.<br />
@@ -35,7 +35,7 @@ $wakanda.init().then(function (ds) {
 });
 
 //Load only Company and Product dataClasses
-$wakanda.init('Company', 'Product').then(function (ds) {
+$wakanda.init('Company, Product').then(function (ds) {
   //use dataStore;
 });</code></pre>
 
@@ -77,7 +77,12 @@ $wakanda.init('Company', 'Product').then(function (ds) {
 </p>
 
 <pre><code class="language-javascript" prism>$wakanda.$login('user', 'strong-passord').$promise.then(function () {
-  //User is logged and have permission to manipulate the right dataclasses
+  if (e.result === true) {
+    //User is logged in and have permission to manipulate the right dataclasses
+  }
+  else {
+    //User is not logged in
+  }
 });</code></pre>
 
 <h3><code>$logout()</code></h3>
