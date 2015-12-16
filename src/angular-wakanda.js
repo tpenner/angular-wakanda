@@ -504,9 +504,32 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
      * @argument {Object} pojo Simple JS object matching the dataclass representation
      * @returns {NgWakEntity}
      */
-    var $$create = function(pojo) {
-        return createNgWakEntity(new WAF.Entity(this, pojo || {}), { expend: true });
-    };
+     var $$create = function(pojo) {
+         //Removing related attributes from pojo to avoid creation attempt on WAF side
+         //We will affect them to the entity when it's created
+         var i;
+         var relatedAttributes = {};
+
+         for (i = 0; i < this.$_relatedAttributes.length; i++) {
+           var attr = this.$_relatedAttributes[i];
+
+           if (pojo.hasOwnProperty(attr.name) && pojo[attr.name] !== undefined) {
+             relatedAttributes[attr.name] = pojo[attr.name];
+             delete pojo[attr.name];
+           }
+         }
+
+         var entity = createNgWakEntity(new WAF.Entity(this, pojo || {}), {
+             expend: true
+         });
+
+         var keys = Object.keys(relatedAttributes);
+         for (i = 0; i < keys.length; i++) {
+           entity[keys[i]] = relatedAttributes[keys];
+         }
+
+         return entity;
+     };
 
     /**
      *
@@ -949,12 +972,13 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
               }
             });
          } else if(attr.type === 'image') {
-           var attribute = this.$_entity[attr.name];
+            var that = this;
             var value = {};
             Object.defineProperty(this, attr.name, {
               enumerable: true,
               configurable: true,
               get: function() {
+                var attribute = that.$_entity[attr.name];
                 if(! attribute.resolvedID) {
                   var val = attribute.getValue();
                   if(val) {
@@ -966,6 +990,7 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
                 return value;
               },
               set: function(value) {
+                var attribute = that.$_entity[attr.name];
                 attribute.setValue(value);
               }
             });
@@ -993,7 +1018,9 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
                      deferred.reject(e);
                     },
                     timeout: 300 // seconds
-                  };
+                  },
+                  attribute = that.$_entity[attr.name];
+
               deferred.promise.$promise = deferred.promise;
 
               if(file) {
@@ -1017,17 +1044,41 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
               return deferred.promise;
             };
 
-          }
-          //@warn specific case for object ? @warn check date types
-          else {
+          } else if(attr.type === 'object' && attr.kind === 'storage') {
+
+            //Store object attributes to compare them when saving (wakanda-issues #6)
+            //Storing only a stringified version to avoid reference comparison on $save method
+            if (!(typeof this.$_objectAttributesOriginalValueStr === 'object')) {
+              this.$_objectAttributesOriginalValueStr = {};
+            }
+            this.$_objectAttributesOriginalValueStr[attr.name] = JSON.stringify(this.$_entity[attr.name].getValue());;
 
             Object.defineProperty(this, attr.name, {
               enumerable: true,
               configurable: true,
               get: function() {
+                  if (this.$_entity) {
+                    return this.$_entity[attr.name].getValue();
+                  }
+              },
+              set: function(newValue) {
                 if(this.$_entity) {
-                  return this.$_entity[attr.name].getValue();
+                  rootScopeSafeApply(function() {
+                    this.$_entity[attr.name].setValue(newValue);
+                  }.bind(this));
                 }
+              }
+            });
+          }
+          //@warn check date types
+          else {
+            Object.defineProperty(this, attr.name, {
+              enumerable: true,
+              configurable: true,
+              get: function() {
+                  if (this.$_entity) {
+                    return this.$_entity[attr.name].getValue();
+                  }
               },
               set: function(newValue) {
                 if(this.$_entity) {
@@ -1062,6 +1113,17 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
         if(!this.$_entity) {
           throw new Error("Can't $save() without pointer, please $fetch() before.");//@todo is is the right way ?
         }
+
+        var _this = this;
+        this.$_dataClass.getAttributes().forEach(function (attr) {
+          //Touching non-touched object attributes if the existing object has been modified (but not erased by a new object)
+          if (attr.type === 'object' && attr.kind === 'storage' && _this.$_entity[attr.name].isTouched() === false) {
+            if (_this.$_objectAttributesOriginalValueStr[attr.name] !== JSON.stringify(_this.$_entity[attr.name].value)) {
+              _this.$_entity[attr.name].touch();
+            }
+          }
+        });
+
         console.group('$save');
         var deferred, wakOptions = {}, that = this;
         //prepare the promise
@@ -1203,6 +1265,39 @@ wakanda.factory('$wakanda', ['$q', '$rootScope', '$http', '$wakandaConfig', func
 
         this.$_entity.serverRefresh(wakOptions);
         return deferred.promise;
+      },
+      toJSON: function () {
+        var ret = {};
+
+        for (var i = 0; i < this.$_dataClass._private.attributes.length; i++) {
+          var attrMeta = this.$_dataClass._private.attributes[i];
+          var attr = this.$_entity[attrMeta.name];
+
+          switch(attrMeta.kind) {
+            case 'relatedEntity':
+              /**
+               * If $_key is present, the related entity is not fetched.
+               * - if it's a string, we have a key, so there is a related entity
+               * - if it's null, no entity is link to this one, so we return a null
+               *
+               * In other cases, we have a fetched entity, so we return it entirely.
+               */
+              if (typeof this[attrMeta.name].$_key === 'string') {
+                ret[attrMeta.name] = {ID: parseInt(attr.relKey)};
+              }
+              else if (this[attrMeta.name].$_key === null) {
+                ret[attrMeta.name] = null;
+              }
+              else {
+                ret[attrMeta.name] = this[attrMeta.name];
+              }
+            break;
+            default:
+              ret[attrMeta.name] = this[attrMeta.name];
+          }
+        }
+
+        return ret;
       }
     };
 
