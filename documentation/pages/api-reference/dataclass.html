@@ -127,10 +127,10 @@ ds.Person.$query({
 
 <p>
   Create a new entity of a dataClass. This entity <strong>will not be saved on server</strong>
-  until the <code>$save()</code> method is called on it, we will see that method in
+  until the <code>$save()</code> method is called on it. See that method documentation in
   the <a href="#/doc/api-reference/entity">Entity API Reference</a>.
   <br />
-  You can pass an object representing attributes of the entity to create.
+  You can pass an object representing attributes of the entity to create, even related ones.
 </p>
 
 <pre><code class="language-javascript" prism>//Create an entity then set its attributes
@@ -144,6 +144,18 @@ newPerson.$save(); //Now it's saved
 var newPerson = ds.Person.$create({
   lastname: 'Smith',
   firstname: 'John'
+});
+
+//Creating an entity with a related attribute
+ds.Tag.$find(8).$promise.then(function (e) {
+  var tag = e.result;
+
+  var newPost = ds.Post.$create({
+    name: 'Amazing view from harbour',
+    location: 'Dover',
+    tag: tag //Related attribute here!
+  });
+  newPost.$save();
 });</code></pre>
 
 <h2>User defined methods</h2>
