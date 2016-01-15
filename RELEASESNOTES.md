@@ -1,6 +1,11 @@
 angular-wakanda.js - release notes
 ===================================================
 
+##V1.0.3
+* $serverRefresh is now deprecated, a warning is displayed on console at each call
+* Update dataProvider to latest version
+* Optimize some unit test that were too slow
+
 ##V1.0.2
 * Fix issue with image upload
 * Fix issue with $toJSON method
@@ -21,7 +26,7 @@ angular-wakanda.js - release notes
 * Add `$upload()` method on image attribute type
 * Add `dataClass.$all()` method
 * Add `$wakanda.$transform` helpers to transform a raw entity returned by server to a Angular-Wakanda entity
-* Add `$wakandaConfifProvider` to set Wakanda server hostname on application configuration
+* Add `$wakandaConfigProvider` to set Wakanda server hostname on application configuration
 * Add `entity.$serverRefresh()` method
 * *Image* attribute type handling
 * Using getter and setter to read/update entity attributes
