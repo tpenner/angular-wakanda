@@ -5983,6 +5983,17 @@ body {
 #quickstartButton:hover {
   background: #d03825; }
 
+.aa-dropdown-menu {
+  position: absolute;
+  right: 0px !important;
+  left: auto !important; }
+  .aa-dropdown-menu .algolia-docsearch-suggestion--highlight {
+    color: #df5a49; }
+  .aa-dropdown-menu .algolia-docsearch-suggestion--category-header {
+    background-color: #373737; }
+  .aa-dropdown-menu .aa-cursor .algolia-docsearch-suggestion, .aa-dropdown-menu .aa-cursor .algolia-docsearch-suggestion--content {
+    color: #333; }
+
 snippets-tabs .btn {
   color: #428bca;
   position: relative;

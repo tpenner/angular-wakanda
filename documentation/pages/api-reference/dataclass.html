@@ -176,6 +176,13 @@ ds.Tag.$find(8).$promise.then(function (e) {
   var returnedValue = event.result;
 });</code></pre>
 
+<p>
+  If the method returns an entity or a collection, you can transform it with
+  <code>$transform</code> helpers to add Angular-Wakanda framework methods like
+  <code>$fetch</code> or <code>$save</code> on it. Please refer to
+  <a href="#/doc/developer-guide/server-methods">this developer guide</a> for further information.
+</p>
+
 <h2>Metadata</h2>
 
 <p>There are some properties and methods to get metadata regarding each dataClass.</p>

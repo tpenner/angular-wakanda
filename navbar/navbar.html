@@ -17,9 +17,22 @@
         <li><a href="#/doc/contribute">Contribute</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        <li>
+          <form class="navbar-form navbar-right">
+            <input id="search-bar" class="form-control" placeholder="Search" size="40" ng-model="searchString" />
+          </form>
+        </li>
         <li><a href="https://github.com/Wakanda/angular-wakanda">Github</a></li>
         <li><a href="http://wakanda.io">Wakanda.io</a></li>
       </ul>
     </div>
   </div>
+
+  <script type="text/javascript">
+    var d = docsearch({
+      apiKey: '75ab6a10820be2af9fe758d5bba060de',
+      indexName: 'wakanda',
+      inputSelector: '#search-bar'
+    });
+  </script>
 </nav>
