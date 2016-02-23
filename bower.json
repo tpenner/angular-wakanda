@@ -1,6 +1,6 @@
 {
   "name": "angular-wakanda",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "keywords": [
     "angular",
     "angular.js",
@@ -16,6 +16,6 @@
   "license": "MIT",
   "ignore": [],
   "dependencies": {
-    "angular": "1.2.6"
+    "angular": "^1.2.6"
   }
 }
