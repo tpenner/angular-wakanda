@@ -76,7 +76,7 @@ $wakanda.init('Company, Product').then(function (ds) {
   or is logged out.
 </p>
 
-<pre><code class="language-javascript" prism>$wakanda.$login('user', 'strong-passord').$promise.then(function () {
+<pre><code class="language-javascript" prism>$wakanda.$login('user', 'strong-passord').$promise.then(function (e) {
   if (e.result === true) {
     //User is logged in and have permission to manipulate the right dataclasses
   }
